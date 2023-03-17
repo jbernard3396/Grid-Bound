@@ -1,5 +1,5 @@
 {
-  "name": "grid-bound",
+  "name": "@jbernard3396/grid-bound",
   "version": "0.0.1",
   "description": "grid for 2d tile based game",
   "main": "index.js",
