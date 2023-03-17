@@ -7,11 +7,20 @@
 			"problemMatcher": [
 				"$tsc"
 			],
+			"group": "build",
+			"label": "tsc: build - src/tsconfig.json"
+		},
+		{
+			"type": "typescript",
+			"tsconfig": "tsconfig.json",
+			"problemMatcher": [
+				"$tsc"
+			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
-			"label": "tsc: build - src/tsconfig.json"
+			"label": "tsc: build - tsconfig.json"
 		}
 	]
 }
