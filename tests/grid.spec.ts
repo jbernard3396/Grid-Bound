@@ -1,6 +1,6 @@
-// import {describe, expect, test} from '@jest/globals';
-const {describe, expect, test} = require('@jest/globals');
-const Grid = require('../src/grid').Grid;
+import {describe, expect, test} from '@jest/globals';
+import {Grid} from '../src/grid';
+
 describe("Grid", () => {
     describe("constructor", () => {
         test("creates a grid of the appropriate size", () => {

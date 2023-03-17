@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "ES6",
         "module": "commonjs",
         "sourceMap": false,
         "outDir": "../dist",
@@ -13,9 +13,9 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "esModuleInterop": true
-
     },
     "exclude": [
         "node_modules"
-    ]
+    ],
+    "esModuleInterop": true
 }

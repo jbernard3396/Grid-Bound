@@ -1,7 +1,6 @@
-const TileClass = require("./tile").Tile;
-
+import { Tile } from '../src/tile';
 class Grid {
-    grid: Tile[][]
+    grid: Array<Array<Tile>>;
     public width: number;
     public height: number;
     constructor(width: number, height: number) {
@@ -10,9 +9,8 @@ class Grid {
         this.height = height;
         for (let i = 0; i < width; i++) {
             this.grid[i] = new Array(height);
-            // this.grid[i].fill(0);
             for (let j = 0; j < height; j++) {
-                this.grid[i][j] = new TileClass();
+                this.grid[i][j] = new Tile();
             }
         }
     }
@@ -25,4 +23,4 @@ class Grid {
 }
 
 
-module.exports = {Grid};
+export {Grid};

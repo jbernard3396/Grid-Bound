@@ -6,4 +6,4 @@ class Tile {
     }
 }
 
-module.exports = {Tile};
+export {Tile};
