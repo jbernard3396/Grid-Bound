@@ -16,6 +16,9 @@
     "url": "https://github.com/jbernard3396/Grid-Bound/issues"
   },
   "homepage": "https://github.com/jbernard3396/Grid-Bound#readme",
+  "publishConfig": {
+    "@Jbernard3396:registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
     "@types/node": "^18.15.0",
