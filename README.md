@@ -37,3 +37,7 @@ You can learn more about this build command by investigating .vscode/tasks.json 
 # Trello board
 Learn more about where this project is going and what needs done next by going to this [trello board](https://trello.com/b/qlDI8q68/grid-locked)
 
+# Npm Package
+Created following [this guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#publishing-a-package)
+
+
