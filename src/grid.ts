@@ -1,6 +1,6 @@
-import { Tile } from '../src/tile';
+import { Cell } from './cell';
 class Grid {
-    grid: Array<Array<Tile>>;
+    grid: Array<Array<Cell>>;
     public width: number;
     public height: number;
     constructor(width: number, height: number) {
@@ -10,7 +10,7 @@ class Grid {
         for (let i = 0; i < width; i++) {
             this.grid[i] = new Array(height);
             for (let j = 0; j < height; j++) {
-                this.grid[i][j] = new Tile();
+                this.grid[i][j] = new Cell();
             }
         }
     }
