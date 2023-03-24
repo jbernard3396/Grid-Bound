@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { Terrain } from '../src/terrain';
+import { Terrain } from '../src/terrain/terrain';
 import { ACTIONS } from '../src/enums/action';
 
 describe('Terrain', () => {
