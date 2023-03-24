@@ -1,4 +1,5 @@
 import { Cell } from './cell';
+import { Coordinate } from './coordinate';
 class Grid {
     grid: Array<Array<Cell>>;
     public width: number;
@@ -14,24 +15,25 @@ class Grid {
             }
         }
     }
-    get(x: number, y: number) {
-        if(x < 0 || x >= this.width || y < 0 || y >= this.height) {
-            throw new Error("Out of bounds grid access: " + x + ", " + y);
+    get(coordinate: Coordinate) {
+        if(coordinate.x < 0 || coordinate.x >= this.width || coordinate.y < 0 || coordinate.y >= this.height) {
+            throw new Error("Out of bounds grid access: " + coordinate.x + ", " + coordinate.y);
         }
-        return this.grid[x][y].value;
+        return this.grid[coordinate.x][coordinate.y].value;
     }
-    CircleRangeIndicator(x: number, y: number, radius: number) {
+    CircleRangeIndicator(coordinate: Coordinate, radius: number) {
         if (radius < 0) {
             throw new Error("Radius must be positive");
         }
-        if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
-            throw new Error("Out of bounds grid access: " + x + ", " + y);
+        if (coordinate.x < 0 || coordinate.x >= this.width || coordinate.y < 0 || coordinate.y >= this.height) {
+            throw new Error("Out of bounds grid access: " + coordinate.x + ", " + coordinate.y);
         } 
         let tilesInRange = [];
-        for (let i = x - radius; i <= x + radius; i++) {
-            for (let j = y - radius; j <= y + radius; j++) {
+        for (let i = coordinate.x - radius; i <= coordinate.x + radius; i++) {
+            for (let j = coordinate.y - radius; j <= coordinate.y + radius; j++) {
                 if (i >= 0 && i < this.width && j >= 0 && j < this.height) {
-                    if (Math.sqrt(Math.pow(i - x, 2) + Math.pow(j - y, 2)) <= radius) {
+                    let distance = Math.sqrt(Math.pow(i - coordinate.x, 2) + Math.pow(j - coordinate.y, 2));
+                    if (distance <= radius) {
                         tilesInRange.push([i, j]);
                     }
                 }
@@ -39,16 +41,16 @@ class Grid {
         }
         return tilesInRange;
     }
-    SquareRangeIndicator(x: number, y: number, radius: number) {
+    SquareRangeIndicator(coordinate: Coordinate, radius: number) {
         if (radius < 0) {
             throw new Error("Radius must be positive");
         }
-        if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
-            throw new Error("Out of bounds grid access: " + x + ", " + y);
+        if (coordinate.x < 0 || coordinate.x >= this.width || coordinate.y < 0 || coordinate.y >= this.height) {
+            throw new Error("Out of bounds grid access: " + coordinate.x + ", " + coordinate.y);
         } 
         let tilesInRange = [];
-        for (let i = x - radius; i <= x + radius; i++) {
-            for (let j = y - radius; j <= y + radius; j++) {
+        for (let i = coordinate.x - radius; i <= coordinate.x + radius; i++) {
+            for (let j = coordinate.y - radius; j <= coordinate.y + radius; j++) {
                 if (i >= 0 && i < this.width && j >= 0 && j < this.height) {
                     tilesInRange.push([i, j]);
                 }
