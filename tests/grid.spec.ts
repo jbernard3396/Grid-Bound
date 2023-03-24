@@ -1,6 +1,8 @@
 import {describe, expect, test} from '@jest/globals';
 import {Grid} from '../src/grid';
 import { Coordinate } from '../src/coordinate';
+import { ACTIONS } from '../src/enums/action';
+import { Pillar } from '../src/terrain/pillar';
 
 describe("Grid", () => {
     describe("constructor", () => {
@@ -11,7 +13,22 @@ describe("Grid", () => {
         });
         test("fills the grid with nulls", () => {
             const grid = new Grid(3, 4);
-            expect(grid.get(new Coordinate(1, 2))).toBe(null);
+            expect(grid.get(new Coordinate(1, 2)).value).toBe(null);
+        });
+    });
+    describe('addCellObject', () => {
+        test('throws an error when the coordinates are out of bounds', () => {
+            const newTerrain = new Pillar();
+            const grid = new Grid(3, 4);
+            expect(() => grid.addCellObject(new Coordinate(3, 2), newTerrain)).toThrow();
+            expect(() => grid.addCellObject(new Coordinate(1, 4), newTerrain)).toThrow();
+            expect(() => grid.addCellObject(new Coordinate(-1, 2), newTerrain)).toThrow();
+        });
+        test('should add a cellObject to the cell', () => {
+            const newTerrain = new Pillar();
+            const grid = new Grid(3, 4);
+            grid.addCellObject(new Coordinate(1, 2), newTerrain);
+            expect(grid.get(new Coordinate(1, 2)).value).toContain(newTerrain);
         });
     });
     describe("get", () => {
@@ -25,18 +42,27 @@ describe("Grid", () => {
     describe("CircleRangeIndicator", () => {
         test("should return an array of the coordinates that are in range", () => {
             const grid = new Grid(3, 4);
-            expect(grid.CircleRangeIndicator(new Coordinate(1,1), 1).sort()).toStrictEqual([[0, 1], [1, 1], [2, 1], [1, 0], [1, 2]].sort());
+            const expectedCoordinates = new Array<Coordinate>();
+            expectedCoordinates.push(new Coordinate(0, 1));
+            expectedCoordinates.push(new Coordinate(1, 1));
+            expectedCoordinates.push(new Coordinate(2, 1));
+            expectedCoordinates.push(new Coordinate(1, 0));
+            expectedCoordinates.push(new Coordinate(1, 2));
+            expect(grid.CircleRangeIndicator(new Coordinate(1, 1), 1).sort()).toStrictEqual(expectedCoordinates.sort());
+            
         });
         test("should leave out coordinates that are out of bounds", () => {
             const grid = new Grid(3, 4);
-            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 1).sort()).toStrictEqual([[0, 0], [1, 0], [0, 1]].sort());
-            expect(grid.CircleRangeIndicator(new Coordinate(2, 3), 1).sort()).toStrictEqual([[2, 3], [1, 3], [2, 2]].sort());
-            expect(grid.CircleRangeIndicator(new Coordinate(1, 1), 100).sort()).toStrictEqual([[0,0],[0,1],[0,2],[0,3], [1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3]].sort());
-
+            const expectedCoordinates = Coordinate.CreateArray([0,0], [1,0], [0,1]);
+            const expectedCoordinates2 = Coordinate.CreateArray([2,3], [1,3], [2,2]);
+            const expectedCoordinates3 = Coordinate.CreateArray([0,0], [0,1], [0,2], [0,3], [1,0], [1,1], [1,2], [1,3],[2,0],[2,1],[2,2],[2,3]);
+            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 1).sort()).toStrictEqual(expectedCoordinates.sort());
+            expect(grid.CircleRangeIndicator(new Coordinate(2, 3), 1).sort()).toStrictEqual(expectedCoordinates2.sort());
+            expect(grid.CircleRangeIndicator(new Coordinate(1, 1), 100).sort()).toStrictEqual(expectedCoordinates3.sort());
         });
         test("should return the passed in coordinate when the range is 0", () => {
             const grid = new Grid(3, 4);
-            expect(grid.CircleRangeIndicator(new Coordinate(1, 1), 0).sort()).toStrictEqual([[1, 1]].sort());
+            expect(grid.CircleRangeIndicator(new Coordinate(1, 1), 0).sort()).toStrictEqual([new Coordinate(1, 1)].sort());
         });
         test("should throw an error when the range is negative", () => {
             const grid = new Grid(3, 4);
@@ -48,21 +74,36 @@ describe("Grid", () => {
             expect(() => grid.CircleRangeIndicator(new Coordinate(1, 4), 1)).toThrow("Out of bounds grid access: 1, 4");
             expect(() => grid.CircleRangeIndicator(new Coordinate(-1, 2), 1)).toThrow("Out of bounds grid access: -1, 2");
         });
+        test("Should not include terrain that does not allow desired action", () => {
+            const grid = new Grid(3, 4);
+            const pillar = new Pillar();
+            grid.addCellObject(new Coordinate(1, 0), pillar);
+            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 1, [ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1]).sort());
+            expect(true).toBe(true);
+        });
+        test("Should pathfind around terrain that does not allow desired action", () => {
+            const grid = new Grid(3, 4);
+            const pillar = new Pillar();
+            grid.addCellObject(new Coordinate(1, 0), pillar);
+            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 2, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2]).sort());
+            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 3, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [0,3], [2, 1], [1, 2]).sort());    
+            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 4, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [0,3], [2, 1], [1, 2], [2,0], [2,2], [1, 3]).sort());
+        });
     });
     describe("SquareRangeIndicator", () => {
         test("should return an array of the coordinates that are in range", () => {
             const grid = new Grid(3, 4);
-            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 1).sort()).toStrictEqual([[0,0],[0, 1],[0,2],[1,0], [1, 1], [1, 2],[2,0],[2,1],[2,2]].sort());
+            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 1).sort()).toStrictEqual(Coordinate.CreateArray([0,0],[0, 1],[0,2],[1,0], [1, 1], [1, 2],[2,0],[2,1],[2,2]).sort());
         });
         test("should leave out coordinates that are out of bounds", () => {
             const grid = new Grid(3, 4);
-            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 1).sort()).toStrictEqual([[0, 0], [0, 1], [1, 0], [1, 1]].sort());
-            expect(grid.SquareRangeIndicator(new Coordinate(2, 3), 1).sort()).toStrictEqual([[1, 2], [1, 3], [2, 2], [2, 3]].sort());
-            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 100).sort()).toStrictEqual([[0,0],[0,1],[0,2],[0,3], [1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3]].sort());
+            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 1).sort()).toStrictEqual(Coordinate.CreateArray([0,0],[0,1],[1,0],[1,1]).sort());
+            expect(grid.SquareRangeIndicator(new Coordinate(2, 3), 1).sort()).toStrictEqual(Coordinate.CreateArray([1,2],[1,3],[2,2],[2,3]).sort());
+            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 100).sort()).toStrictEqual(Coordinate.CreateArray([0,0],[0,1],[0,2],[0,3], [1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3]).sort());
         });
         test("should return the passed in coordinate when the range is 0", () => {
             const grid = new Grid(3, 4);
-            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 0).sort()).toStrictEqual([[1, 1]].sort());
+            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 0).sort()).toStrictEqual([new Coordinate(1, 1)].sort());
         });
         test("should throw an error when the range is negative", () => {
             const grid = new Grid(3, 4);
