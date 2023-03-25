@@ -115,6 +115,19 @@ describe("Grid", () => {
             expect(() => grid.SquareRangeIndicator(new Coordinate(1, 4), 1)).toThrow("Out of bounds grid access: 1, 4");
             expect(() => grid.SquareRangeIndicator(new Coordinate(-1, 2), 1)).toThrow("Out of bounds grid access: -1, 2");
         });
+        test("Should not include terrain that does not allow desired action", () => {
+            const grid = new Grid(3, 4);
+            const pillar = new Pillar();
+            grid.addCellObject(new Coordinate(1, 0), pillar);
+            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 1, [ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1,1]).sort());
+        });
+        test("Should pathfind around terrain that does not allow desired action", () => {
+            const grid = new Grid(3, 4);
+            const pillar = new Pillar();
+            grid.addCellObject(new Coordinate(1, 0), pillar);
+            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 2, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2,2], [2, 1], [2,0]).sort());
+            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 3, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2,2], [2, 1], [2,0], [0,3], [1,3], [2,3]).sort());
+        });
     });
 });
 

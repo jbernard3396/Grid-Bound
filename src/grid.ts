@@ -37,36 +37,17 @@ export class Grid {
         if (coordinate.x < 0 || coordinate.x >= this.width || coordinate.y < 0 || coordinate.y >= this.height) {
             throw new Error("Out of bounds grid access: " + coordinate.x + ", " + coordinate.y);
         } 
-        let tilesInRange = [];
-        tilesInRange.push(new Coordinate(coordinate.x, coordinate.y));
-        for (let i = 0; i < radius; i++) {
-            let newTilesInRange = new Array<Coordinate>();
-            for (let j = 0; j < tilesInRange.length; j++) {
-                newTilesInRange = newTilesInRange.concat(this.getAdjacentTiles(tilesInRange[j], RangeTypes.CIRCLE));
-            }
-            tilesInRange = tilesInRange.concat(newTilesInRange);
-            tilesInRange = Coordinate.DedupArray(tilesInRange);
-            tilesInRange = this.removeTilesNotMatchingActions(tilesInRange, actions);
-        }
-
-        return tilesInRange;
+        return this.floodFill(coordinate, radius, actions, RangeTypes.CIRCLE);
     }
-    SquareRangeIndicator(coordinate: Coordinate, radius: number): Array<Coordinate> {
+    SquareRangeIndicator(coordinate: Coordinate, radius: number, actions: Array<ACTIONS> = []): Array<Coordinate> {
         if (radius < 0) {
             throw new Error("Radius must be positive");
         }
         if (coordinate.x < 0 || coordinate.x >= this.width || coordinate.y < 0 || coordinate.y >= this.height) {
             throw new Error("Out of bounds grid access: " + coordinate.x + ", " + coordinate.y);
         } 
-        let tilesInRange = [];
-        for (let i = coordinate.x - radius; i <= coordinate.x + radius; i++) {
-            for (let j = coordinate.y - radius; j <= coordinate.y + radius; j++) {
-                if (i >= 0 && i < this.width && j >= 0 && j < this.height) {
-                    tilesInRange.push(new Coordinate(i, j));
-                }
-            }
-        }
-        return tilesInRange;
+        return this.floodFill(coordinate, radius, actions, RangeTypes.SQUARE);
+        
     }
 
     private getAdjacentTiles(coordinate: Coordinate, rangeType: RangeTypes): Array<Coordinate> {
@@ -109,5 +90,35 @@ export class Grid {
             }
             return true;
         });
+    }
+
+    private floodFill(coordinate: Coordinate, radius:number, actions: Array<ACTIONS> = [], RangeType: RangeTypes = RangeTypes.SQUARE): Array<Coordinate> {
+        let tiles = new Array<Coordinate>();
+        let queue = new Array<Coordinate>();
+        let visited = new Array(this.width);
+        for (let i = 0; i < this.width; i++) {
+            visited[i] = new Array(this.height);
+            for (let j = 0; j < this.height; j++) {
+                visited[i][j] = false;
+            }
+        }
+        queue.push(coordinate);
+        visited[coordinate.x][coordinate.y] = true;
+        for( var i = 0; i <= radius; i++) {
+            let queueLength = queue.length;
+            for (var j = 0; j < queueLength; j++) {
+                let currentCoordinate = queue.shift()!;
+                tiles.push(currentCoordinate);
+                let adjacentTiles = this.getAdjacentTiles(currentCoordinate, RangeType);
+                adjacentTiles = this.removeTilesNotMatchingActions(adjacentTiles, actions);
+                adjacentTiles.forEach((tile) => {
+                    if (!visited[tile.x][tile.y]) {
+                        queue.push(tile);
+                        visited[tile.x][tile.y] = true;
+                    }
+                });
+            }
+        }
+        return tiles;
     }
 }
