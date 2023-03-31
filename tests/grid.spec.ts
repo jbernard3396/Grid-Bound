@@ -3,6 +3,7 @@ import {Grid} from '../src/grid';
 import { Coordinate } from '../src/coordinate';
 import { ACTIONS } from '../src/enums/action';
 import { Pillar } from '../src/terrain/pillar';
+import { Swamp } from '../src/terrain/swamp';
 import { RangeTypes } from '../src/enums/rangeTypes';
 
 describe("Grid", () => {
@@ -102,6 +103,15 @@ describe("Grid", () => {
             grid.addCellObject(new Coordinate(1, 0), pillar);
             expect(grid.RangeIndicator(new Coordinate(0, 0), 2, RangeTypes.SQUARE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2,2], [2, 1], [2,0]).sort());
             expect(grid.RangeIndicator(new Coordinate(0, 0), 3, RangeTypes.SQUARE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2,2], [2, 1], [2,0], [0,3], [1,3], [2,3]).sort());
+        });
+        test("Should spend more movement points when pathfinding through terrain with a movementCost", () => {
+            const grid = new Grid(3, 4);
+            const swamp = new Swamp();
+            grid.addCellObject(new Coordinate(1, 0), swamp);
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 1, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0,1]).sort());
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 2, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [0, 2], [1, 0], [1, 1], ).sort());
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 3, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [0, 2], [0,3], [1, 0], [1, 1], [1, 2], [2,0], [2, 1]).sort());    
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 3, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [0, 2], [0,3], [1, 0], [1, 1], [1, 2], [1,3], [2,0], [2, 1],[2,2]).sort());    
         });
     });
 });

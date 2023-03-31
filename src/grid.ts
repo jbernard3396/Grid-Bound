@@ -90,22 +90,28 @@ export class Grid {
         for (let i = 0; i < this.width; i++) {
             visited[i] = new Array(this.height);
             for (let j = 0; j < this.height; j++) {
-                visited[i][j] = false;
+                visited[i][j] = 0;
             }
         }
         queue.push(coordinate);
-        visited[coordinate.x][coordinate.y] = true;
         for( var i = 0; i <= radius; i++) {
             let queueLength = queue.length;
             for (var j = 0; j < queueLength; j++) {
                 let currentCoordinate = queue.shift()!;
-                tiles.push(currentCoordinate);
+                visited[currentCoordinate.x][currentCoordinate.y] += 1;
+                // console.log(visited[currentCoordinate.x][currentCoordinate.y])
+                // console.log(this.get(currentCoordinate).getCellStats().movementPenalty)
+                if(visited[currentCoordinate.x][currentCoordinate.y] == this.get(currentCoordinate).getCellStats().movementPenalty +1) {
+                    tiles.push(currentCoordinate);
+                }
                 let adjacentTiles = this.getAdjacentTiles(currentCoordinate, RangeType);
                 adjacentTiles = this.removeTilesNotMatchingActions(adjacentTiles, actions);
                 adjacentTiles.forEach((tile) => {
-                    if (!visited[tile.x][tile.y]) {
+                    if (visited[tile.x][tile.y] === this.get(tile).getCellStats().movementPenalty) {
                         queue.push(tile);
-                        visited[tile.x][tile.y] = true;
+                    } else if (visited[tile.x][tile.y] < this.get(tile).getCellStats().movementPenalty) {
+                        queue.unshift(currentCoordinate);
+                        visited[tile.x][tile.y] += 1;
                     }
                 });
             }

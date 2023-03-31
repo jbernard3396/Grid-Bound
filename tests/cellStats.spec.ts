@@ -7,17 +7,23 @@ describe('CellStats', () => {
             const cellStats = new CellStats();
             expect(cellStats).toBeDefined();
         });
-        test('should create a cellStats with the given movementCost', () => {
+        test('should default penalties to 0', () => {
+            const cellStats = new CellStats();
+            expect(cellStats.movementPenalty).toBe(0);
+            expect(cellStats.visionPenalty).toBe(0);
+            expect(cellStats.targetPenalty).toBe(0);
+        });
+        test('should create a cellStats with the given movementPenalty', () => {
             const cellStats = new CellStats(2);
-            expect(cellStats.movementCost).toBe(2);
+            expect(cellStats.movementPenalty).toBe(2);
         });
-        test('should create a cellStats with the given visionCost', () => {
+        test('should create a cellStats with the given visionPenalty', () => {
             const cellStats = new CellStats(2, 3);
-            expect(cellStats.visionCost).toBe(3);
+            expect(cellStats.visionPenalty).toBe(3);
         });
-        test('should create a cellStats with the given targetCost', () => {
+        test('should create a cellStats with the given targetPenalty', () => {
             const cellStats = new CellStats(2, 3, 4);
-            expect(cellStats.targetCost).toBe(4);
+            expect(cellStats.targetPenalty).toBe(4);
         });
     });
 });

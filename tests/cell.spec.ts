@@ -61,4 +61,20 @@ describe('Cell', () => {
             expect(cell.getDisabledActions()).toContain(ACTIONS.TARGET);
         });
     });
+    describe('getCellStats', () => {
+        test('should return an empty array when the cell is empty', () => {
+            const cell = new Cell();
+            expect(cell.getCellStats()).toEqual({ movementPenalty: 0, visionPenalty: 0, targetPenalty: 0 });
+        });
+        test('should combine the stats of the cell', () => {
+            const newTerrain = new Terrain();
+            const newTerrain2 = new Terrain();
+            newTerrain.stats = { movementPenalty: 0, visionPenalty: 0, targetPenalty: 1 };
+            newTerrain2.stats = { movementPenalty: 1, visionPenalty: 0, targetPenalty: 1 };
+            const cell = new Cell();
+            cell.addCellObject(newTerrain);
+            cell.addCellObject(newTerrain2);
+            expect(cell.getCellStats()).toEqual({ movementPenalty: 1, visionPenalty: 0, targetPenalty: 2});
+        });
+    });
 });

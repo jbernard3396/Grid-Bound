@@ -1,8 +1,8 @@
 import { Terrain } from './Terrain';
-import { ACTIONS } from '../enums/action';
+import { CellStats } from '../../src/cell/cellStats';
 export class Swamp extends Terrain {
     constructor() {
-        super([ACTIONS.MOVE, ACTIONS.SEE_THROUGH, ACTIONS.STAND]);
+        super([] , new CellStats(1, 0,0));
 
     }
 }

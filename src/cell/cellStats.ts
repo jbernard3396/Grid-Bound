@@ -1,10 +1,10 @@
 export class CellStats {
-    movementCost: number = 1;
-    visionCost: number = 1;
-    targetCost: number = 1;
-    constructor(movementCost: number = 1, visionCost: number = 1, targetCost: number = 1) {
-        this.movementCost = movementCost;
-        this.visionCost = visionCost;
-        this.targetCost = targetCost;
+    movementPenalty: number = 0;
+    visionPenalty: number = 0;
+    targetPenalty: number = 0;
+    constructor(movementPenalty: number = 0, visionPenalty: number = 0, targetPenalty: number = 0) {
+        this.movementPenalty = movementPenalty;
+        this.visionPenalty = visionPenalty;
+        this.targetPenalty = targetPenalty;
     };
 };
