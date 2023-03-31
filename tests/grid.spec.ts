@@ -111,7 +111,6 @@ describe("Grid", () => {
             expect(grid.RangeIndicator(new Coordinate(0, 0), 1, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0,1]).sort());
             expect(grid.RangeIndicator(new Coordinate(0, 0), 2, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [0, 2], [1, 0], [1, 1], ).sort());
             expect(grid.RangeIndicator(new Coordinate(0, 0), 3, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [0, 2], [0,3], [1, 0], [1, 1], [1, 2], [2,0], [2, 1]).sort());    
-            expect(grid.RangeIndicator(new Coordinate(0, 0), 3, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [0, 2], [0,3], [1, 0], [1, 1], [1, 2], [1,3], [2,0], [2, 1],[2,2]).sort());    
         });
     });
 });
