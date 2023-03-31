@@ -3,6 +3,7 @@ import {Grid} from '../src/grid';
 import { Coordinate } from '../src/coordinate';
 import { ACTIONS } from '../src/enums/action';
 import { Pillar } from '../src/terrain/pillar';
+import { RangeTypes } from '../src/enums/rangeTypes';
 
 describe("Grid", () => {
     describe("constructor", () => {
@@ -39,8 +40,8 @@ describe("Grid", () => {
             expect(() => grid.get(new Coordinate(-1, 2))).toThrow();
         });
     });
-    describe("CircleRangeIndicator", () => {
-        test("should return an array of the coordinates that are in range", () => {
+    describe("RangeIndicator", () => {
+        test("should return an array of the coordinates that are in range when given Circle", () => {
             const grid = new Grid(3, 4);
             const expectedCoordinates = new Array<Coordinate>();
             expectedCoordinates.push(new Coordinate(0, 1));
@@ -48,7 +49,7 @@ describe("Grid", () => {
             expectedCoordinates.push(new Coordinate(2, 1));
             expectedCoordinates.push(new Coordinate(1, 0));
             expectedCoordinates.push(new Coordinate(1, 2));
-            expect(grid.CircleRangeIndicator(new Coordinate(1, 1), 1).sort()).toStrictEqual(expectedCoordinates.sort());
+            expect(grid.RangeIndicator(new Coordinate(1, 1), 1, RangeTypes.CIRCLE).sort()).toStrictEqual(expectedCoordinates.sort());
             
         });
         test("should leave out coordinates that are out of bounds", () => {
@@ -56,77 +57,51 @@ describe("Grid", () => {
             const expectedCoordinates = Coordinate.CreateArray([0,0], [1,0], [0,1]);
             const expectedCoordinates2 = Coordinate.CreateArray([2,3], [1,3], [2,2]);
             const expectedCoordinates3 = Coordinate.CreateArray([0,0], [0,1], [0,2], [0,3], [1,0], [1,1], [1,2], [1,3],[2,0],[2,1],[2,2],[2,3]);
-            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 1).sort()).toStrictEqual(expectedCoordinates.sort());
-            expect(grid.CircleRangeIndicator(new Coordinate(2, 3), 1).sort()).toStrictEqual(expectedCoordinates2.sort());
-            expect(grid.CircleRangeIndicator(new Coordinate(1, 1), 100).sort()).toStrictEqual(expectedCoordinates3.sort());
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 1,RangeTypes.CIRCLE).sort()).toStrictEqual(expectedCoordinates.sort());
+            expect(grid.RangeIndicator(new Coordinate(2, 3), 1,RangeTypes.CIRCLE).sort()).toStrictEqual(expectedCoordinates2.sort());
+            expect(grid.RangeIndicator(new Coordinate(1, 1), 100,RangeTypes.CIRCLE).sort()).toStrictEqual(expectedCoordinates3.sort());
         });
         test("should return the passed in coordinate when the range is 0", () => {
             const grid = new Grid(3, 4);
-            expect(grid.CircleRangeIndicator(new Coordinate(1, 1), 0).sort()).toStrictEqual([new Coordinate(1, 1)].sort());
+            expect(grid.RangeIndicator(new Coordinate(1, 1), 0, RangeTypes.CIRCLE).sort()).toStrictEqual([new Coordinate(1, 1)].sort());
+            expect(grid.RangeIndicator(new Coordinate(1, 1), 0, RangeTypes.SQUARE).sort()).toStrictEqual([new Coordinate(1, 1)].sort());
         });
         test("should throw an error when the range is negative", () => {
             const grid = new Grid(3, 4);
-            expect(() => grid.CircleRangeIndicator(new Coordinate(1, 1), -1)).toThrow();
+            expect(() => grid.RangeIndicator(new Coordinate(1, 1), -1, RangeTypes.CIRCLE)).toThrow();
+            expect(() => grid.RangeIndicator(new Coordinate(1, 1), -1, RangeTypes.SQUARE)).toThrow();
         });
         test("should throw an error when the coordinates are out of bounds", () => {
             const grid = new Grid(3, 4);
-            expect(() => grid.CircleRangeIndicator(new Coordinate(3, 2), 1)).toThrow("Out of bounds grid access: 3, 2");
-            expect(() => grid.CircleRangeIndicator(new Coordinate(1, 4), 1)).toThrow("Out of bounds grid access: 1, 4");
-            expect(() => grid.CircleRangeIndicator(new Coordinate(-1, 2), 1)).toThrow("Out of bounds grid access: -1, 2");
+            expect(() => grid.RangeIndicator(new Coordinate(3, 2), 1, RangeTypes.CIRCLE)).toThrow("Out of bounds grid access: 3, 2");
+            expect(() => grid.RangeIndicator(new Coordinate(1, 4), 1, RangeTypes.CIRCLE)).toThrow("Out of bounds grid access: 1, 4");
+            expect(() => grid.RangeIndicator(new Coordinate(-1, 2), 1, RangeTypes.CIRCLE)).toThrow("Out of bounds grid access: -1, 2");
         });
         test("Should not include terrain that does not allow desired action", () => {
             const grid = new Grid(3, 4);
             const pillar = new Pillar();
             grid.addCellObject(new Coordinate(1, 0), pillar);
-            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 1, [ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1]).sort());
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 1, RangeTypes.CIRCLE, [ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1]).sort());
             expect(true).toBe(true);
         });
-        test("Should pathfind around terrain that does not allow desired action", () => {
+        test("Should pathfind around terrain that does not allow desired action when given Circle", () => {
             const grid = new Grid(3, 4);
             const pillar = new Pillar();
             grid.addCellObject(new Coordinate(1, 0), pillar);
-            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 2, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2]).sort());
-            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 3, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [0,3], [2, 1], [1, 2]).sort());    
-            expect(grid.CircleRangeIndicator(new Coordinate(0, 0), 4, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [0,3], [2, 1], [1, 2], [2,0], [2,2], [1, 3]).sort());
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 2, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2]).sort());
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 3, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [0,3], [2, 1], [1, 2]).sort());    
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 4, RangeTypes.CIRCLE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [0,3], [2, 1], [1, 2], [2,0], [2,2], [1, 3]).sort());
         });
-    });
-    describe("SquareRangeIndicator", () => {
-        test("should return an array of the coordinates that are in range", () => {
+        test("should return an array of the coordinates that are in range when given Square", () => {
             const grid = new Grid(3, 4);
-            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 1).sort()).toStrictEqual(Coordinate.CreateArray([0,0],[0, 1],[0,2],[1,0], [1, 1], [1, 2],[2,0],[2,1],[2,2]).sort());
+            expect(grid.RangeIndicator(new Coordinate(1, 1), 1,RangeTypes.SQUARE).sort()).toStrictEqual(Coordinate.CreateArray([0,0],[0, 1],[0,2],[1,0], [1, 1], [1, 2],[2,0],[2,1],[2,2]).sort());
         });
-        test("should leave out coordinates that are out of bounds", () => {
-            const grid = new Grid(3, 4);
-            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 1).sort()).toStrictEqual(Coordinate.CreateArray([0,0],[0,1],[1,0],[1,1]).sort());
-            expect(grid.SquareRangeIndicator(new Coordinate(2, 3), 1).sort()).toStrictEqual(Coordinate.CreateArray([1,2],[1,3],[2,2],[2,3]).sort());
-            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 100).sort()).toStrictEqual(Coordinate.CreateArray([0,0],[0,1],[0,2],[0,3], [1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3]).sort());
-        });
-        test("should return the passed in coordinate when the range is 0", () => {
-            const grid = new Grid(3, 4);
-            expect(grid.SquareRangeIndicator(new Coordinate(1, 1), 0).sort()).toStrictEqual([new Coordinate(1, 1)].sort());
-        });
-        test("should throw an error when the range is negative", () => {
-            const grid = new Grid(3, 4);
-            expect(() => grid.SquareRangeIndicator(new Coordinate(1, 1), -1)).toThrow();
-        });
-        test("should throw an error when the coordinates are out of bounds", () => {
-            const grid = new Grid(3, 4);
-            expect(() => grid.SquareRangeIndicator(new Coordinate(3, 2), 1)).toThrow("Out of bounds grid access: 3, 2");
-            expect(() => grid.SquareRangeIndicator(new Coordinate(1, 4), 1)).toThrow("Out of bounds grid access: 1, 4");
-            expect(() => grid.SquareRangeIndicator(new Coordinate(-1, 2), 1)).toThrow("Out of bounds grid access: -1, 2");
-        });
-        test("Should not include terrain that does not allow desired action", () => {
+        test("Should pathfind around terrain that does not allow desired action when given Square", () => {
             const grid = new Grid(3, 4);
             const pillar = new Pillar();
             grid.addCellObject(new Coordinate(1, 0), pillar);
-            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 1, [ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1,1]).sort());
-        });
-        test("Should pathfind around terrain that does not allow desired action", () => {
-            const grid = new Grid(3, 4);
-            const pillar = new Pillar();
-            grid.addCellObject(new Coordinate(1, 0), pillar);
-            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 2, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2,2], [2, 1], [2,0]).sort());
-            expect(grid.SquareRangeIndicator(new Coordinate(0, 0), 3, [ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2,2], [2, 1], [2,0], [0,3], [1,3], [2,3]).sort());
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 2, RangeTypes.SQUARE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2,2], [2, 1], [2,0]).sort());
+            expect(grid.RangeIndicator(new Coordinate(0, 0), 3, RangeTypes.SQUARE,[ACTIONS.MOVE, ACTIONS.STAND]).sort()).toStrictEqual(Coordinate.CreateArray([0, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2,2], [2, 1], [2,0], [0,3], [1,3], [2,3]).sort());
         });
     });
 });

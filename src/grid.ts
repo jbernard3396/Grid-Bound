@@ -30,23 +30,14 @@ export class Grid {
         }
         this.grid[coordinate.x][coordinate.y].addCellObject(cellObject);
     }
-    CircleRangeIndicator(coordinate: Coordinate, radius: number, actions: Array<ACTIONS> = []) {
-        if (radius < 0) {
-            throw new Error("Radius must be positive");
-        }        
-        if (coordinate.x < 0 || coordinate.x >= this.width || coordinate.y < 0 || coordinate.y >= this.height) {
-            throw new Error("Out of bounds grid access: " + coordinate.x + ", " + coordinate.y);
-        } 
-        return this.floodFill(coordinate, radius, actions, RangeTypes.CIRCLE);
-    }
-    SquareRangeIndicator(coordinate: Coordinate, radius: number, actions: Array<ACTIONS> = []): Array<Coordinate> {
+    RangeIndicator(coordinate: Coordinate, radius: number, RangeType: RangeTypes, actions: Array<ACTIONS> = []): Array<Coordinate> {
         if (radius < 0) {
             throw new Error("Radius must be positive");
         }
         if (coordinate.x < 0 || coordinate.x >= this.width || coordinate.y < 0 || coordinate.y >= this.height) {
             throw new Error("Out of bounds grid access: " + coordinate.x + ", " + coordinate.y);
         } 
-        return this.floodFill(coordinate, radius, actions, RangeTypes.SQUARE);
+        return this.floodFill(coordinate, radius, actions, RangeType);
         
     }
 
