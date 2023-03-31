@@ -1,4 +1,4 @@
-import { Cell } from './cell';
+import { Cell } from './cell/cell';
 import { Coordinate } from './coordinate';
 import { ACTIONS } from './enums/action';
 import { RangeTypes } from './enums/rangeTypes';

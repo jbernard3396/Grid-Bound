@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { Cell } from '../src/cell';
+import { Cell } from '../src/cell/cell';
 import { ICellObject } from '../src/interfaces/ICellObject';
 import { Terrain } from '../src/terrain/terrain';
 import { ACTIONS } from '../src/enums/action';

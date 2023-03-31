@@ -12,5 +12,9 @@ describe('Terrain', () => {
             const terrain = new Terrain([ACTIONS.MOVE]);
             expect(terrain.disabledActions).toContain(ACTIONS.MOVE);
         });
+        // test('should create a terrain with the given CellStats', () => {
+        //     const terrain = new Terrain([ACTIONS.MOVE], new CellStats());
+        //     expect(terrain.stats).toContain(new CellStats());
+        // });
     });
 });

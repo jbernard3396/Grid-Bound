@@ -1,4 +1,4 @@
-import { ICellObject } from "./interfaces/ICellObject";
+import { ICellObject } from "../interfaces/ICellObject";
 class Cell {
     value : Array<ICellObject>|null;
     constructor(value : Array<ICellObject>|null = null) {
