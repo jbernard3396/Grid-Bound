@@ -2,7 +2,8 @@
   "name": "@jbernard3396/grid-bound",
   "version": "0.0.3",
   "description": "grid for 2d tile based game",
-  "main": "index.js",
+  "main": "./src/grid.ts",
+  "types": "./dist/grid.d.ts",
   "scripts": {
     "test": "jest"
   },
