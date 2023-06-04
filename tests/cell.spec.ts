@@ -38,6 +38,11 @@ describe('Cell', () => {
             expect(cell.value).not.toContain(newTerrain);
             expect(cell.value).toContain(newTerrain2);
         });
+        test('should throw an error when the cell is empty', () => {
+            const newTerrain = new Terrain();
+            const cell = new Cell();
+            expect(() => cell.removeCellObject(newTerrain)).toThrow();
+        });
         test('should throw an error when the cellObject is not in the cell', () => {
             const newTerrain = new Terrain();
             const newTerrain2 = new Terrain();

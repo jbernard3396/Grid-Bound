@@ -70,9 +70,6 @@ export class Grid {
         //filter out tiles if an action in getDisabledActions is in actions
         return tiles.filter((tile) => {
             let cell = this.get(tile);
-            if(cell === null) {
-                return false;
-            }
             let disabledActions = cell.getDisabledActions()
             for (let i = 0; i < actions.length; i++) {
                 if (disabledActions.indexOf(actions[i]) !== -1) {

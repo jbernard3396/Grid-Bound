@@ -16,7 +16,7 @@ class Cell {
 
     removeCellObject(cellObject : ICellObject) {
         if (!this.value) {
-            throw new Error('Cell does not contain cellObject');
+            throw new Error('Cell does exist');
         }
         if(!this.value.includes(cellObject)) {
             throw new Error('Cell does not contain cellObject');
